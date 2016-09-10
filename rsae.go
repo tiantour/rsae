@@ -1,4 +1,4 @@
-package rase
+package rsae
 
 import (
 	"crypto"
@@ -13,12 +13,12 @@ import (
 )
 
 // RSA rsa
-var RSAE = &irsa{}
+var RSA = &rsae{}
 
-type irsa struct{}
+type rsae struct{}
 
 //Encrypt rsa加密
-func (r *irsa) Encrypt(origdata string) (result string, err error) {
+func (r *rsae) Encrypt(origdata string) (result string, err error) {
 	publicKey, err := imago.File.Read(conf.Options.RAS.PublicKey)
 	if err != nil {
 		return
@@ -42,7 +42,7 @@ func (r *irsa) Encrypt(origdata string) (result string, err error) {
 }
 
 //Decrypt rsa解密
-func (r *irsa) Decrypt(ciphertext string) (result string, err error) {
+func (r *rsae) Decrypt(ciphertext string) (result string, err error) {
 	privateKey, err := imago.File.Read(conf.Options.RAS.PrivateKey)
 	if err != nil {
 		return
@@ -69,7 +69,7 @@ func (r *irsa) Decrypt(ciphertext string) (result string, err error) {
 }
 
 //Sign rsa签名
-func (r *irsa) Sign(origdata string) (result string, err error) {
+func (r *rsae) Sign(origdata string) (result string, err error) {
 	privateKey, err := imago.File.Read(conf.Options.RAS.PrivateKey)
 	if err != nil {
 		return
@@ -93,7 +93,7 @@ func (r *irsa) Sign(origdata string) (result string, err error) {
 }
 
 //Verify rsa签名验证
-func (r *irsa) Verify(origdata, ciphertext string) (status bool, err error) {
+func (r *rsae) Verify(origdata, ciphertext string) (status bool, err error) {
 	publicKey, err := imago.File.Read(conf.Options.RAS.PublicKey)
 	if err != nil {
 		return
