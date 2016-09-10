@@ -17,7 +17,7 @@ var RSA = &rsae{}
 
 type rsae struct{}
 
-//Encrypt rsa加密
+// Encrypt
 func (r *rsae) Encrypt(origdata string) (result string, err error) {
 	publicKey, err := imago.File.Read(conf.Options.RAS.PublicKey)
 	if err != nil {
@@ -41,7 +41,7 @@ func (r *rsae) Encrypt(origdata string) (result string, err error) {
 	return
 }
 
-//Decrypt rsa解密
+// Decrypt
 func (r *rsae) Decrypt(ciphertext string) (result string, err error) {
 	privateKey, err := imago.File.Read(conf.Options.RAS.PrivateKey)
 	if err != nil {
@@ -68,7 +68,7 @@ func (r *rsae) Decrypt(ciphertext string) (result string, err error) {
 	return
 }
 
-//Sign rsa签名
+// Sign
 func (r *rsae) Sign(origdata string) (result string, err error) {
 	privateKey, err := imago.File.Read(conf.Options.RAS.PrivateKey)
 	if err != nil {
@@ -92,7 +92,7 @@ func (r *rsae) Sign(origdata string) (result string, err error) {
 	return
 }
 
-//Verify rsa签名验证
+// Verify
 func (r *rsae) Verify(origdata, ciphertext string) (status bool, err error) {
 	publicKey, err := imago.File.Read(conf.Options.RAS.PublicKey)
 	if err != nil {
