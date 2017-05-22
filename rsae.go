@@ -27,29 +27,21 @@ func NewRsae() *Rsae {
 }
 
 // Base64Encode base64 encode
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Base64Encode(data []byte) string {
 	return base64.StdEncoding.EncodeToString(data)
 }
 
 //Base64Decode base64 descode
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Base64Decode(data string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(data)
 }
 
 // Md516 md5 16
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Md516(data string) string {
 	return r.Md532(data)[8:24]
 }
 
 // Md532 md5 32
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Md532(data string) string {
 	h := md5.New()
 	h.Write([]byte(data))
@@ -57,8 +49,6 @@ func (r Rsae) Md532(data string) string {
 }
 
 // SHA1 sha1
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) SHA1(data string) []byte {
 	h := sha1.New()
 	h.Write([]byte(data))
@@ -66,8 +56,6 @@ func (r Rsae) SHA1(data string) []byte {
 }
 
 // SHA256 sha256
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) SHA256(data string) []byte {
 	h := sha256.New()
 	h.Write([]byte(data))
@@ -75,8 +63,6 @@ func (r Rsae) SHA256(data string) []byte {
 }
 
 // HmacSha1 hmac sha1
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) HmacSha1(publicKey, privateKey string) []byte {
 	mac := hmac.New(sha1.New, []byte(privateKey))
 	mac.Write([]byte(publicKey))
@@ -84,16 +70,12 @@ func (r Rsae) HmacSha1(publicKey, privateKey string) []byte {
 }
 
 // Pbkdf2Sha256 pbkdf2 sha256
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Pbkdf2Sha256(data, salt string, iterations int) string {
 	dk := pbkdf2.Key([]byte(data), []byte(salt), iterations, 32, sha256.New)
 	return fmt.Sprintf("pbkdf2_sha256$%d$%s$%s", iterations, salt, base64.StdEncoding.EncodeToString(dk))
 }
 
 // Encrypt rsa entrypt
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Encrypt(origdata string, publicKey []byte) (string, error) {
 	block, _ := pem.Decode(publicKey)
 	if block == nil {
@@ -112,8 +94,6 @@ func (r Rsae) Encrypt(origdata string, publicKey []byte) (string, error) {
 }
 
 // Decrypt rsa decarypt
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Decrypt(ciphertext string, privateKey []byte) (string, error) {
 	block, _ := pem.Decode(privateKey)
 	if block == nil {
@@ -135,8 +115,6 @@ func (r Rsae) Decrypt(ciphertext string, privateKey []byte) (string, error) {
 }
 
 // Sign rsa sign
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Sign(origdata string, privateKey []byte) (string, error) {
 	block, _ := pem.Decode(privateKey)
 	if block == nil {
@@ -155,8 +133,6 @@ func (r Rsae) Sign(origdata string, privateKey []byte) (string, error) {
 }
 
 // Verify rsa verify
-// date 2017-05-17
-// author andy.jiang
 func (r Rsae) Verify(origdata, ciphertext string, publicKey []byte) (bool, error) {
 	block, _ := pem.Decode(publicKey)
 	if block == nil {
