@@ -1,7 +1,10 @@
 package rsae
 
 import (
+	"bytes"
 	"crypto"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/rand"
@@ -75,8 +78,8 @@ func (r Rsae) Pbkdf2Sha256(data, salt string, iterations int) string {
 	return fmt.Sprintf("pbkdf2_sha256$%d$%s$%s", iterations, salt, base64.StdEncoding.EncodeToString(dk))
 }
 
-// Encrypt rsa entrypt
-func (r Rsae) Encrypt(origdata string, publicKey []byte) (string, error) {
+// RSAEncrypt rsa entrypt
+func (r Rsae) RSAEncrypt(origdata string, publicKey []byte) (string, error) {
 	block, _ := pem.Decode(publicKey)
 	if block == nil {
 		return "", errors.New("public key error")
@@ -93,8 +96,8 @@ func (r Rsae) Encrypt(origdata string, publicKey []byte) (string, error) {
 	return r.Base64Encode(body), nil
 }
 
-// Decrypt rsa decarypt
-func (r Rsae) Decrypt(ciphertext string, privateKey []byte) (string, error) {
+// RSADecrypt rsa decarypt
+func (r Rsae) RSADecrypt(ciphertext string, privateKey []byte) (string, error) {
 	block, _ := pem.Decode(privateKey)
 	if block == nil {
 		return "", errors.New("private key error")
@@ -114,8 +117,8 @@ func (r Rsae) Decrypt(ciphertext string, privateKey []byte) (string, error) {
 	return string(body), nil
 }
 
-// Sign rsa sign
-func (r Rsae) Sign(origdata string, privateKey []byte) (string, error) {
+// RSASign rsa sign
+func (r Rsae) RSASign(origdata string, privateKey []byte) (string, error) {
 	block, _ := pem.Decode(privateKey)
 	if block == nil {
 		return "", errors.New("private key error")
@@ -132,8 +135,8 @@ func (r Rsae) Sign(origdata string, privateKey []byte) (string, error) {
 	return r.Base64Encode(body), nil
 }
 
-// Verify rsa verify
-func (r Rsae) Verify(origdata, ciphertext string, publicKey []byte) (bool, error) {
+// RSAVerify rsa verify
+func (r Rsae) RSAVerify(origdata, ciphertext string, publicKey []byte) (bool, error) {
 	block, _ := pem.Decode(publicKey)
 	if block == nil {
 		return false, errors.New("public key error")
@@ -153,4 +156,44 @@ func (r Rsae) Verify(origdata, ciphertext string, publicKey []byte) (bool, error
 		return false, err
 	}
 	return true, nil
+}
+
+// PKCS7Padding pkcs7 padding
+func (r Rsae) PKCS7Padding(ciphertext []byte, blockSize int) []byte {
+	padding := blockSize - len(ciphertext)%blockSize
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(ciphertext, padtext...)
+}
+
+// PKCS7UnPadding pkcs7 unpadding
+func (r Rsae) PKCS7UnPadding(plantText []byte, blockSize int) []byte {
+	length := len(plantText)
+	unpadding := int(plantText[length-1])
+	return plantText[:(length - unpadding)]
+}
+
+// AESEncrypt aes encrypt
+func (r Rsae) AESEncrypt(plantText, key, iv []byte) ([]byte, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	plantText = r.PKCS7Padding(plantText, block.BlockSize())
+	blockModel := cipher.NewCBCEncrypter(block, iv)
+	ciphertext := make([]byte, len(plantText))
+	blockModel.CryptBlocks(ciphertext, plantText)
+	return ciphertext, nil
+}
+
+// AESDecrypt aes decrypt
+func (r Rsae) AESDecrypt(ciphertext, key, iv []byte) ([]byte, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	blockModel := cipher.NewCBCDecrypter(block, iv)
+	plantText := make([]byte, len(ciphertext))
+	blockModel.CryptBlocks(plantText, ciphertext)
+	plantText = r.PKCS7UnPadding(plantText, block.BlockSize())
+	return plantText, nil
 }
