@@ -14,7 +14,7 @@ import (
 
 func main() {
 	args := "input data"
-	result := rsae.NewRsae().Base64Encode([]byte(args))
+	result := rsae.NewBase64().Encode([]byte(args))
 	fmt.Println(result)
 }
 ```
@@ -32,7 +32,7 @@ import (
 
 func main() {
 	args := "input data"
-	result, err := rsae.NewRsae().Base64Decode(args)
+	result, err := rsae.NewBase64().Decode(args)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -53,25 +53,7 @@ import (
 
 func main() {
 	args := "input data"
-	result := rsae.NewRsae().Md532(args)
-	fmt.Println(result)
-}
-```
-
-MD516
-
-```
-package main
-
-import (
-	"fmt"
-
-	"github.com/tiantour/rsae"
-)
-
-func main() {
-	args := "input data"
-	result := rsae.NewRsae().Md516(args)
+	result := rsae.NewMD5().Encode(args)
 	fmt.Println(result)
 }
 ```
@@ -89,7 +71,7 @@ import (
 
 func main() {
 	args := "input data"
-	result := rsae.NewRsae().SHA1(args)
+	result := rsae.NewSHA().SHA1(args)
 	fmt.Println(result)
 }
 ```
@@ -107,7 +89,7 @@ import (
 
 func main() {
 	args := "input data"
-	result := rsae.NewRsae().SHA256(args)
+	result := rsae.NewSHA().SHA256(args)
 	fmt.Println(result)
 }
 ```
@@ -127,7 +109,7 @@ import (
 func main() {
 	publicKey := "public key"
 	privateKey := "private key"
-	result := rsae.NewRsae().HmacSha1(publicKey, privateKey)
+	result := rsae.NewSHA().HmacSha1(publicKey, privateKey)
 	fmt.Println(result)
 }
 ```
@@ -148,7 +130,7 @@ func main() {
 	data := "input date"
 	salt := "input salt"
 	iterations := 12000
-	result := rsae.NewRsae().Pbkdf2Sha256(data, salt, iterations)
+	result := rsae.NewSHA().Pbkdf2Sha256(data, salt, iterations)
 	fmt.Println(result)
 }
 ```
@@ -171,7 +153,7 @@ func main() {
 	if err != nil {
 		fmt.Println("key error")
 	}
-	result, err := rsae.NewRsae().Encrypt(origdata, publicKey)
+	result, err := rsae.NewRSA().Encrypt(origdata, publicKey)
 	if err != nil {
 		fmt.Println("encrypt error")
 	}
@@ -197,7 +179,7 @@ func main() {
 	if err != nil {
 		fmt.Println("key error")
 	}
-	result, err := rsae.NewRsae().Decrypt(origdata, privateKey)
+	result, err := rsae.NewRSA().Decrypt(origdata, privateKey)
 	if err != nil {
 		fmt.Println("Decrypt error")
 	}
@@ -223,7 +205,7 @@ func main() {
 	if err != nil {
 		fmt.Println("key error")
 	}
-	result, err := rsae.NewRsae().Sign(origdata, privateKey)
+	result, err := rsae.NewRSA().Sign(origdata, privateKey)
 	if err != nil {
 		fmt.Println("Decrypt error")
 	}
@@ -250,7 +232,7 @@ func main() {
 	if err != nil {
 		fmt.Println("key error")
 	}
-	result, err := rsae.NewRsae().Verify(origdata, ciphertext, publicKey)
+	result, err := rsae.NewRSA().Verify(origdata, ciphertext, publicKey)
 	if err != nil {
 		fmt.Println("Decrypt error")
 	}
