@@ -38,3 +38,29 @@ func (a *AES) Decrypt(ciphertext, key, iv []byte) ([]byte, error) {
 	plantText = NewPKCS7().UnPadding(plantText, block.BlockSize())
 	return plantText, nil
 }
+
+// ECBEncrypt aes encrypt ecb
+func (a *AES) ECBEncrypt(plantText, key []byte) ([]byte, error) {
+	block, err := aes.NewCipher([]byte(key))
+	if err != nil {
+		return nil, err
+	}
+	plantText = NewPKCS7().Padding(plantText, block.BlockSize())
+	blockModel := NewECBEncrypter(block)
+	ciphertext := make([]byte, len(plantText))
+	blockModel.CryptBlocks(ciphertext, plantText)
+	return ciphertext, nil
+}
+
+// ECBDecrypt aes decrypt ecb
+func (a *AES) ECBDecrypt(ciphertext, key []byte) ([]byte, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	blockMode := NewECBEncrypter(block)
+	plantText := make([]byte, len(ciphertext))
+	blockMode.CryptBlocks(plantText, ciphertext)
+	plantText = NewPKCS7().UnPadding(plantText, block.BlockSize())
+	return plantText, nil
+}
