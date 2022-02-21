@@ -3,6 +3,7 @@ package rsae
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"fmt"
 )
 
 // AES aes
@@ -63,4 +64,44 @@ func (a *AES) ECBDecrypt(ciphertext, key []byte) ([]byte, error) {
 	blockMode.CryptBlocks(plantText, ciphertext)
 	plantText = NewPKCS7().UnPadding(plantText, block.BlockSize())
 	return plantText, nil
+}
+
+func (a *AES) GCMEncrypt(key []byte, nonce []byte, plainText, additionalData string) (string, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	cipherText := aesgcm.Seal(nil, nonce, []byte(plainText), []byte(additionalData))
+
+	return fmt.Sprintf("%x", cipherText), nil
+}
+
+func (a *AES) GCMDecrypt(key []byte, nonce []byte, cipherTextBase64, additionalData string) (string, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	cipherText, err := NewBase64().Decode(cipherTextBase64)
+	if err != nil {
+		return "", err
+	}
+
+	plainText, err := aesgcm.Open(nil, nonce, []byte(cipherText), []byte(additionalData))
+	if err != nil {
+		return "", err
+	}
+
+	return string(plainText), nil
 }
