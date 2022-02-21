@@ -74,6 +74,24 @@ func (r *RSA) Sign(origdata string, privateKey []byte) (string, error) {
 	return NewBase64().Encode(body), nil
 }
 
+// Sign rsa sign
+func (r *RSA) SignWithSha256(origdata string, privateKey []byte) (string, error) {
+	block, _ := pem.Decode(privateKey)
+	if block == nil {
+		return "", errors.New("private key error")
+	}
+	privInterface, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		return "", err
+	}
+	digest := NewSHA().SHA256(origdata)
+	body, err := rsa.SignPKCS1v15(rand.Reader, privInterface.(*rsa.PrivateKey), crypto.SHA256, digest)
+	if err != nil {
+		return "", err
+	}
+	return NewBase64().Encode(body), nil
+}
+
 // Verify rsa verify
 func (r *RSA) Verify(origdata, ciphertext string, publicKey []byte) (bool, error) {
 	block, _ := pem.Decode(publicKey)
