@@ -74,7 +74,30 @@ func (r *RSA) Sign(origdata string, privateKey []byte) (string, error) {
 	return NewBase64().Encode(body), nil
 }
 
-// Sign rsa sign
+// Verify rsa verify
+func (r *RSA) Verify(origdata, ciphertext string, publicKey []byte) (bool, error) {
+	block, _ := pem.Decode(publicKey)
+	if block == nil {
+		return false, errors.New("public key error")
+	}
+	pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return false, err
+	}
+	pub := pubInterface.(*rsa.PublicKey)
+	digest := NewSHA().SHA256(origdata)
+	body, err := NewBase64().Decode(ciphertext)
+	if err != nil {
+		return false, err
+	}
+	err = rsa.VerifyPKCS1v15(pub, crypto.SHA256, digest, body)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// SignWithSha256 sign with sha256
 func (r *RSA) SignWithSha256(origdata string, privateKey []byte) (string, error) {
 	block, _ := pem.Decode(privateKey)
 	if block == nil {
@@ -92,17 +115,17 @@ func (r *RSA) SignWithSha256(origdata string, privateKey []byte) (string, error)
 	return NewBase64().Encode(body), nil
 }
 
-// Verify rsa verify
-func (r *RSA) Verify(origdata, ciphertext string, publicKey []byte) (bool, error) {
+// VerifyWithSha256 verify with sha256
+func (r *RSA) VerifyWithSha256(origdata, ciphertext string, publicKey []byte) (bool, error) {
 	block, _ := pem.Decode(publicKey)
 	if block == nil {
 		return false, errors.New("public key error")
 	}
-	pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+	pubInterface, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
 		return false, err
 	}
-	pub := pubInterface.(*rsa.PublicKey)
+	pub := pubInterface.PublicKey.(*rsa.PublicKey)
 	digest := NewSHA().SHA256(origdata)
 	body, err := NewBase64().Decode(ciphertext)
 	if err != nil {
